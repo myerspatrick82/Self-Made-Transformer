@@ -29,6 +29,7 @@ word_freqs = defaultdict(int)
 
 for text in corpus:  # creates each word with its frequency
     words_with_offset = tokenizer.backend_tokenizer.pre_tokenizer.pre_tokenize_str(text)
+    print(words_with_offset)
     new_words = [word for word, offset in words_with_offset]
     for word in new_words:
         word_freqs[word] += 1
