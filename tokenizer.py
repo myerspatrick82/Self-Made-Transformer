@@ -136,7 +136,7 @@ def tokenize(text):
 
 print(tokenize("What a world we live in"))
 
-
+print()
 # TODO: 
 class Tokenizer:
     pass
