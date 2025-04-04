@@ -19,6 +19,9 @@ tokenizer = AutoTokenizer.from_pretrained("gpt2")  # pre-processing for splittin
 # create word frequencies---------------------
 ##############################################
 
+text = open("output.txt", "r", encoding="utf-8").read()
+text.encode("utf-8", errors="ignore").decode("utf-8")
+
 def word_freq(corpus):
     """
     Creates a defaultdict with each word and its frequency
@@ -30,14 +33,21 @@ def word_freq(corpus):
         {word: freq} counts
     """
     word_freqs = defaultdict(int)
-    for text in corpus: 
-        words_with_offset = tokenizer.backend_tokenizer.pre_tokenizer.pre_tokenize_str(text)
-        new_words = [word for word, offset in words_with_offset]
-        for word in new_words:
-            word_freqs[word] += 1
+    # for text in corpus: 
+    #     # words_with_offset = tokenizer.backend_tokenizer.pre_tokenizer.pre_tokenize_str(text)
+    #     # new_words = [word for word, offset in words_with_offset]
+    #     # for word in new_words:
+    #         # word_freqs[word] += 1
+    #     words = text.split()
+    #     for word in words:
+    #         word_freqs[word] += 1
+    for word in corpus.split():
+        word_freqs[word] += 1
     return word_freqs
 
-word_freqs = word_freq(corpus)
+# word_freqs = word_freq(corpus)
+word_freqs = word_freq(text)
+print(word_freqs)
 
 # create vocab section------------------------
 ##############################################
@@ -89,7 +99,7 @@ def merge_pair(a, b, splits):  # splits is each word and its split IE {word: ["w
 
 def merge(splits, vocab):
     merges = {}
-    vocab_size = 50
+    vocab_size = 2000
     while len(vocab) < vocab_size:  # finds best pair, merges it, and adds it
         pair_freqs = compute_pair_freqs(splits)
         best_pair = ""
@@ -105,8 +115,10 @@ def merge(splits, vocab):
 merges = merge(splits, vocab)
 
 def tokenize(text):
-    pre_tokenize_result = tokenizer._tokenizer.pre_tokenizer.pre_tokenize_str(text)
-    pre_tokenized_text = [word for word, offset in pre_tokenize_result]
+    # pre_tokenize_result = tokenizer._tokenizer.pre_tokenizer.pre_tokenize_str(text)
+    # pre_tokenized_text = [word for word, offset in pre_tokenize_result]
+    pre_tokenized_text = text.split()
+    # pre_tokenized_text = [word for word in text]
     splits = [[l for l in word] for word in pre_tokenized_text]
     for pair, merge in merges.items():
         for idx, split in enumerate(splits):
@@ -121,13 +133,28 @@ def tokenize(text):
     return sum(splits, [])
 
 print(tokenize("What a cool tokenizer"))
+tokenized = tokenize("What a cool tokenizer")
+encoded = []
+for token in tokenized:
+    for i, v in enumerate(vocab):
+        if token == v:
+            encoded.append(i)
+print(encoded)
+decoded = [vocab[x] for x in encoded]
+print(decoded)
+print(vocab)
+print(merges)
+
 # TODO:
 
 class Tokenizer:
     
-    def __init__(self):
+    def __init__(self, text):
         pass
     
+    def train():
+        pass
+
     def alphabet():
         pass
 
