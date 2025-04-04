@@ -3,14 +3,6 @@ import torch.nn.functional as F
 from transformers import AutoTokenizer
 from collections import defaultdict
 
-
-class Model(nn.Module):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def forward(self, x):
-        pass
-
 corpus = [
     "Natural language processing is a fascinating field.",
     "Tokenizers break text into smaller units called tokens.",
@@ -22,38 +14,48 @@ corpus = [
     "Let's explore how different algorithms tokenize the same text.",
 ]
 
-
 tokenizer = AutoTokenizer.from_pretrained("gpt2")  # pre-processing for splitting tokens
 
-word_freqs = defaultdict(int)  
+# create word frequencies---------------------
+##############################################
 
-for text in corpus:  # creates each word with its frequency
-    words_with_offset = tokenizer.backend_tokenizer.pre_tokenizer.pre_tokenize_str(text)
-    print(words_with_offset)
-    new_words = [word for word, offset in words_with_offset]
-    for word in new_words:
-        word_freqs[word] += 1
+def word_freq(corpus):
+    """
+    Creates a defaultdict with each word and its frequency
 
-print(word_freqs, "word frequencies")
+    Args:
+        corpus: specified text bank
 
-alphabet = [] 
+    Returns:
+        {word: freq} counts
+    """
+    word_freqs = defaultdict(int)
+    for text in corpus: 
+        words_with_offset = tokenizer.backend_tokenizer.pre_tokenizer.pre_tokenize_str(text)
+        new_words = [word for word, offset in words_with_offset]
+        for word in new_words:
+            word_freqs[word] += 1
+    return word_freqs
 
-for word in word_freqs.keys():  # creates alphabet of unique characters for specified text corpus
-    for letter in word:
-        if letter not in alphabet:
-            alphabet.append(letter)
-alphabet.sort()
+word_freqs = word_freq(corpus)
 
-print(alphabet, "alphabet")  
+# create vocab section------------------------
+##############################################
 
-vocab = ["<|endoftext|>"] + alphabet.copy()
+def create_base_vocabulary(word_freqs):
+    vocab = []
+    for word in word_freqs.keys():
+        for letter in word:
+            if letter not in vocab:
+                vocab.append(letter)
+    vocab.sort()
+    vocab = ["<|endoftext|>"] + vocab
+    return vocab
 
-# print(vocab, "vocab") 
+vocab = create_base_vocabulary(word_freqs)
 
 splits = {word: [c for c in word] for word in word_freqs.keys()}  # split each word into individual characters (using a dict)
-
-# print(splits, "splits")
-
+# print(splits, "before")
 def compute_pair_freqs(splits):  # find pair frequencies of ALL words, I.E. ("word", 2)
     pair_freqs = defaultdict(int)
     for word, freq in word_freqs.items():
@@ -67,23 +69,8 @@ def compute_pair_freqs(splits):  # find pair frequencies of ALL words, I.E. ("wo
 
 pair_freqs = compute_pair_freqs(splits)
 
-for i, key in enumerate(pair_freqs.keys()):  # prints first 5 pair freqs
-    print(f"{key}: {pair_freqs[key]}")
-    if i >= 5:
-        break
-
-best_pair = ""
-max_freq = None
-
-for pair, freq in pair_freqs.items(): 
-    if max_freq is None or max_freq < freq:
-        best_pair = pair
-        max_freq = freq
-
-# print(best_pair, max_freq)
-
-merges = {("Ġ", "t"): "Ġt"}
-vocab.append("Ġt")
+# merging pairs-------------------------------
+##############################################
 
 def merge_pair(a, b, splits):  # splits is each word and its split IE {word: ["w","o","r","d"]}
     for word in word_freqs:  # loops through all the words and their freq
@@ -100,24 +87,22 @@ def merge_pair(a, b, splits):  # splits is each word and its split IE {word: ["w
         splits[word] = split
     return splits
 
-splits = merge_pair("Ġ", "t", splits)  # start merge pair with these
-# print(splits["Ġtrained"])
-
-vocab_size = 50
-while len(vocab) < vocab_size:  # finds best pair, merges it, and adds it
-    pair_freqs = compute_pair_freqs(splits)
-    best_pair = ""
-    max_freq = None
-    for pair, freq in pair_freqs.items():
-        if max_freq is None or max_freq < freq: 
-            best_pair = pair
-            max_freq = freq
-    splits = merge_pair(*best_pair, splits)
-    merges[best_pair] = best_pair[0] + best_pair[1]
-    vocab.append(best_pair[0] + best_pair[1])
-
-# print(merges)
-# print(vocab)
+def merge(splits, vocab):
+    merges = {}
+    vocab_size = 50
+    while len(vocab) < vocab_size:  # finds best pair, merges it, and adds it
+        pair_freqs = compute_pair_freqs(splits)
+        best_pair = ""
+        max_freq = None
+        for pair, freq in pair_freqs.items():  # loop through all pair, freq
+            if max_freq is None or max_freq < freq: 
+                best_pair = pair  # found best
+                max_freq = freq  # set to freq
+        splits = merge_pair(*best_pair, splits)  # merge the pair together in splits
+        merges[best_pair] = best_pair[0] + best_pair[1]  
+        vocab.append(best_pair[0] + best_pair[1])
+    return merges
+merges = merge(splits, vocab)
 
 def tokenize(text):
     pre_tokenize_result = tokenizer._tokenizer.pre_tokenizer.pre_tokenize_str(text)
@@ -135,9 +120,14 @@ def tokenize(text):
 
     return sum(splits, [])
 
-print(tokenize("What a world we live in"))
+print(tokenize("What a cool tokenizer"))
+# TODO:
 
-print()
-# TODO: 
 class Tokenizer:
-    pass
+    
+    def __init__(self):
+        pass
+    
+    def alphabet():
+        pass
+
