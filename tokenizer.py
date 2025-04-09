@@ -47,7 +47,7 @@ def word_freq(corpus):
 
 # word_freqs = word_freq(corpus)
 word_freqs = word_freq(text)
-print(word_freqs)
+# print(word_freqs)
 
 # create vocab section------------------------
 ##############################################
@@ -104,10 +104,15 @@ def merge(splits, vocab):
         pair_freqs = compute_pair_freqs(splits)
         best_pair = ""
         max_freq = None
-        for pair, freq in pair_freqs.items():  # loop through all pair, freq
-            if max_freq is None or max_freq < freq: 
-                best_pair = pair  # found best
-                max_freq = freq  # set to freq
+        for pair in pair_freqs:
+            freq = pair_freqs[pair]
+            if max_freq is None or max_freq < freq:
+                best_pair = pair
+                max_freq = freq
+        # for pair, freq in pair_freqs.items():  # loop through all pair, freq
+        #     if max_freq is None or max_freq < freq: 
+        #         best_pair = pair  # found best
+        #         max_freq = freq  # set to freq
         splits = merge_pair(*best_pair, splits)  # merge the pair together in splits
         merges[best_pair] = best_pair[0] + best_pair[1]  
         vocab.append(best_pair[0] + best_pair[1])
@@ -142,8 +147,8 @@ for token in tokenized:
 print(encoded)
 decoded = [vocab[x] for x in encoded]
 print(decoded)
-print(vocab)
-print(merges)
+# print(vocab)
+# print(merges)
 
 # TODO:
 
