@@ -1,2 +1,3 @@
 .venv
 byte-level-bpe.tokenizer.json
+out.txt

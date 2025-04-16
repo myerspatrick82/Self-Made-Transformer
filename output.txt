@@ -837,7 +837,8 @@ TrueFalse
 bytearray
 
 mutable
-
+cool cool cool cool cool cool 
+token token token tokenizer tokenizer tokenizer
 Sequence of bytes
 
 bytearray(b'Some ASCII')bytearray(b"Some ASCII")bytearray([119, 105, 107, 105])
