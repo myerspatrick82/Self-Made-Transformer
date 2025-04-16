@@ -77,14 +77,16 @@ class Tokenizer:
     def _merge(self, splits):
         import time
         start = time.time()
-        merges = {}
+        self.merges = {}
         vocab_size = 2000
         iterations = 0
         print("in merge")
         has_200 = False
         while len(self.vocab) < vocab_size:  # finds best pair, merges it, and adds it
-            if iterations % 50 == 0:
-                print("200 iterations passed")
+            if iterations % 50 == 0 and iterations > 0:
+                print("50 iterations passed, checkpointing")
+                with open("tokenizer2.pkl", "wb") as file:
+                    pickle.dump(self, file)
                 has_200 = True
             if has_200:
                 print(iterations)
@@ -97,12 +99,12 @@ class Tokenizer:
                     best_pair = pair
                     max_freq = freq
             splits = self._merge_pair(*best_pair, splits)  # merge the pair together in splits
-            merges[best_pair] = best_pair[0] + best_pair[1]  
+            self.merges[best_pair] = best_pair[0] + best_pair[1]  
             self.vocab.append(best_pair[0] + best_pair[1])
             iterations += 1
         end = time.time()
         print(end-start, "time")
-        return merges
+        return self.merges
     
     def _compute_pair_freqs(self, splits):  # find pair frequencies of ALL words, I.E. ("word", 2)
         pair_freqs = defaultdict(int)
