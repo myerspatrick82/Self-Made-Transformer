@@ -2,3 +2,6 @@
 byte-level-bpe.tokenizer.json
 out.txt
 *.pkl
+new_output.txt
+tokenizer.pkl
+tokenizer.pkl
