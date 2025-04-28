@@ -3,7 +3,7 @@ import pickle
 
 class Tokenizer:
     
-    def __init__(self, text, vocab_size=2000):
+    def __init__(self, text, vocab_size=4000):
         self.text = text
         self.vocab_size = vocab_size
         self.vocab = None
@@ -78,9 +78,9 @@ class Tokenizer:
         import time
         start = time.time()
         self.merges = {}
-        vocab_size = 2000
         iterations = 0
         print("in merge")
+        vocab_size = 8000
         has_200 = False
         while len(self.vocab) < vocab_size:  # finds best pair, merges it, and adds it
             if iterations % 50 == 0 and iterations > 0:
@@ -102,6 +102,7 @@ class Tokenizer:
             self.merges[best_pair] = best_pair[0] + best_pair[1]  
             self.vocab.append(best_pair[0] + best_pair[1])
             iterations += 1
+            print(iterations)
         end = time.time()
         print(end-start, "time")
         return self.merges
@@ -132,6 +133,9 @@ class Tokenizer:
             word_freqs[word] += 1
         return word_freqs
     
+import re
+def clean_text(text):
+    return re.sub(r"[^a-zA-Z0-9\s.,!?'\-]", '', text)
 
 def main():
     # test corpus
@@ -151,8 +155,9 @@ def main():
     # text = open("output.txt", "r", encoding="utf-8").read()
     print("opening file")
     # text = open("output.txt", "r", encoding='utf-8').read()
-    text = open("out.txt", "r").read()
+    text = open("new_output.txt", "r", encoding='utf-8').read()
     text.encode("utf-8", errors="ignore").decode("utf-8")
+    text = clean_text(text)
     # some tests
     print("initializing tokenizer class")
     tokenizer = Tokenizer(text=text)

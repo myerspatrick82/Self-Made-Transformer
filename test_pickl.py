@@ -1,7 +1,7 @@
 import pickle
 from tokenizer import Tokenizer
 
-with open("tokenizer_new.pkl", "rb") as file:
+with open("tokenizer2.pkl", "rb") as file:
     loaded_tokenizer = pickle.load(file)
 
 def tokenize(text):
