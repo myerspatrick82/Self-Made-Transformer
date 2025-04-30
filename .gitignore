@@ -4,3 +4,7 @@ out.txt
 *.pkl
 new_output.txt
 tokenizer.pkl
+*.txt
+*.pt
+checkpoint_epoch_*.pt
+/nltk_data
