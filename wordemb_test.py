@@ -43,15 +43,13 @@ def find_min_k_with_overlap(word, emb1, emb2, max_k=100):
             return k, top1 & top2
     return None, set()
 
-# -------- MAIN --------
 def main():
     # Load GloVe
-    print("Loading GloVe...")
+    print("Loading GloVe")
     glove_raw = load_glove("glove.6B.50d.txt")
     glove = normalize_embeddings(glove_raw)
 
-    # Load your custom checkpoint and vocab
-    print("Loading custom embeddings and vocabulary...")
+    print("Loading custom embeddings and vocabulary")
     checkpoint = torch.load("checkpoint_epoch_nltk5.pt", map_location="cpu")
     
     with open("idx_to_word.pkl", "rb") as f:
@@ -59,7 +57,7 @@ def main():
 
     checkpoint = torch.load("checkpoint_epoch_nltk5.pt", map_location="cpu")
 
-    from embedding import SkipGramNegSampling  # Replace with actual filename if needed
+    from embedding import SkipGramNegSampling 
 
     vocab_size = checkpoint['vocab_size']
     embedding_dim = checkpoint['embedding_dim']
